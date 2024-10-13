@@ -18,24 +18,53 @@ import PaymentSuccess from "./pages/shopping/PaymentSuccess";
 import Search from "./pages/shopping/Search";
 import NotAuth from "./pages/not-auth";
 import NotFound from "./pages/not-found";
+import CheckAuth from "./components/common/check-auth";
 
 const App = () => {
+  const isAuthenticated = false;
+  const user = null;
+  // const user = {
+  //   name: "Mohit",
+  //   role: "user",
+  // };
+
   return (
     <div className="">
       <Routes>
-        <Route path="/auth" element={<AuthLayout />}>
+        <Route
+          path="/auth"
+          element={
+            <CheckAuth isAuthenticated={isAuthenticated} user={user}>
+              <AuthLayout />
+            </CheckAuth>
+          }
+        >
           <Route path="login" element={<Login />} />
           <Route path="register" element={<Register />} />
         </Route>
 
-        <Route path="/admin" element={<AdminLayout />}>
+        <Route
+          path="/admin"
+          element={
+            <CheckAuth isAuthenticated={isAuthenticated} user={user}>
+              <AdminLayout />
+            </CheckAuth>
+          }
+        >
           <Route path="dashboard" element={<Dashboard />} />
           <Route path="features" element={<Features />} />
           <Route path="orders" element={<Orders />} />
           <Route path="products" element={<Products />} />
         </Route>
 
-        <Route path="/shop" element={<ShoppingLayout />}>
+        <Route
+          path="/shop"
+          element={
+            <CheckAuth isAuthenticated={isAuthenticated} user={user}>
+              <ShoppingLayout />
+            </CheckAuth>
+          }
+        >
           <Route path="home" element={<Home />} />
           <Route path="listing" element={<Listing />} />
           <Route path="checkout" element={<Checkout />} />
