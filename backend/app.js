@@ -4,6 +4,8 @@ import cors from "cors";
 import { errorMiddleware } from "./middlewares/error.js";
 import { config } from "./config/env.config.js";
 
+import authRoutes from "./routes/auth/auth.route.js";
+
 const app = express();
 
 // CORS CONFIG
@@ -33,6 +35,7 @@ app.get("/", (req, res) => {
 });
 
 // ROUTES
+app.use("/api/auth", authRoutes);
 
 // ERROR HANDLING MIDDLEWARE
 app.use(errorMiddleware);
