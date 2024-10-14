@@ -19,15 +19,10 @@ import Search from "./pages/shopping/Search";
 import NotAuth from "./pages/not-auth";
 import NotFound from "./pages/not-found";
 import CheckAuth from "./components/common/check-auth";
+import { useSelector } from "react-redux";
 
 const App = () => {
-  const isAuthenticated = false;
-  const user = null;
-  // const user = {
-  //   name: "Mohit",
-  //   role: "user",
-  // };
-
+  const { isAuthenticated, user } = useSelector((state) => state.auth);
   return (
     <div className="">
       <Routes>

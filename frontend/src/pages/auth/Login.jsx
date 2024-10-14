@@ -1,6 +1,9 @@
 import CommonForm from "@/components/common/form";
 import { loginFormControls } from "@/components/config";
+import { useToast } from "@/hooks/use-toast";
+import { loginUser } from "@/store/authSlice";
 import { useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 
 const initialState = {
@@ -8,12 +11,29 @@ const initialState = {
   password: "",
 };
 
-const onSubmit = () => {
-  console.log("Submitted");
-};
-
 const Login = () => {
   const [formData, setFormData] = useState(initialState);
+  const { isLoading, error } = useSelector((state) => state.auth);
+  const dispatch = useDispatch();
+  const { toast } = useToast();
+
+  const onSubmit = async (e) => {
+    e.preventDefault();
+
+    const data = await dispatch(loginUser(formData));
+
+    if (data.meta.requestStatus === "fulfilled") {
+      toast({
+        title: data?.payload?.message,
+      });
+    } else if (data.meta.requestStatus === "rejected") {
+      toast({
+        title: data.payload?.message || error || "Something went wrong!",
+        variant: "destructive",
+      });
+    }
+  };
+
   return (
     <div className="mx-auto w-full max-w-md space-y-6">
       <div className="text-center">
@@ -32,10 +52,11 @@ const Login = () => {
       </div>
       <CommonForm
         formControls={loginFormControls}
-        buttonText={"Sign In"}
+        buttonText={isLoading ? "Please wait..." : "Sign In"}
         formData={formData}
         setFormData={setFormData}
         onSubmit={onSubmit}
+        isBtnDisabled={isLoading}
       />
     </div>
   );
