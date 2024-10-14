@@ -1,7 +1,10 @@
 import CommonForm from "@/components/common/form";
 import { registerFormControls } from "@/components/config";
+import { useToast } from "@/hooks/use-toast";
+import { registerUser } from "@/store/authSlice";
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { Link, useNavigate } from "react-router-dom";
 
 const initialState = {
   userName: "",
@@ -9,12 +12,31 @@ const initialState = {
   password: "",
 };
 
-const onSubmit = () => {
-  console.log("Submitted");
-};
-
 const Register = () => {
   const [formData, setFormData] = useState(initialState);
+  const { isLoading, error } = useSelector((state) => state.auth);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const { toast } = useToast();
+
+  const onSubmit = async (e) => {
+    e.preventDefault();
+
+    const data = await dispatch(registerUser(formData));
+
+    if (data.meta.requestStatus === "fulfilled") {
+      toast({
+        title: data?.payload?.message,
+      });
+      navigate("/auth/login");
+    } else if (data.meta.requestStatus === "rejected") {
+      toast({
+        title: data.payload?.message || error || "Something went wrong!",
+        variant: "destructive",
+      });
+    }
+  };
+
   return (
     <div className="mx-auto w-full max-w-md space-y-6">
       <div className="text-center">
@@ -33,10 +55,11 @@ const Register = () => {
       </div>
       <CommonForm
         formControls={registerFormControls}
-        buttonText={"Sign Up"}
+        buttonText={isLoading ? "Please wait..." : "Sign Up"}
         formData={formData}
         setFormData={setFormData}
         onSubmit={onSubmit}
+        isBtnDisabled={isLoading}
       />
     </div>
   );
