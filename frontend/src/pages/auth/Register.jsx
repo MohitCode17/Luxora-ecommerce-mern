@@ -22,7 +22,7 @@ const Register = () => {
           Create new account
         </h1>
         <p className="mt-1">
-          Already have an account
+          Already have an account?
           <Link
             to={"/auth/login"}
             className="font-medium ml-2 text-primary hover:underline"
