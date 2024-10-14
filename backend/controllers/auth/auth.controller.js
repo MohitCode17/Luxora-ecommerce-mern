@@ -1,6 +1,8 @@
 import { catchAsyncErrors } from "../../middlewares/catchAsyncError.js";
 import ErrorHandler from "../../middlewares/error.js";
 import User from "../../models/user.model.js";
+import { config } from "../../config/env.config.js";
+import jwt from "jsonwebtoken";
 
 // REGISTER USER CONTROLLER
 export const handleRegister = catchAsyncErrors(async (req, res, next) => {
@@ -31,7 +33,49 @@ export const handleRegister = catchAsyncErrors(async (req, res, next) => {
 });
 
 // LOGIN USER CONTROLLER
-export const handleLogin = catchAsyncErrors(async (req, res, next) => {});
+export const handleLogin = catchAsyncErrors(async (req, res, next) => {
+  const { email, password } = req.body;
+
+  if (!email || !password)
+    return next(new ErrorHandler("All fields are required.", 400));
+
+  // CHECK USER EXIST
+  const user = await User.findOne({ email });
+
+  if (!user)
+    return next(new ErrorHandler("Invalid Credentials, Try again!", 400));
+
+  // CHECK PASSWORD
+  const isPasswordMatch = await user.comparePassword(password);
+
+  if (!isPasswordMatch)
+    return next(new ErrorHandler("Invalid Credentials, Try again!", 400));
+
+  // GENERATE JWT TOKEN AND PASS TO COOKIE
+  const token = jwt.sign(
+    {
+      id: user._id,
+      role: user.role,
+      email: user.email,
+      userName: user.userName,
+    },
+    config.JWT_SECRET_KEY,
+    {
+      expiresIn: "60m",
+    }
+  );
+
+  res.cookie("token", token, { httpOnly: true, secure: false }).json({
+    success: true,
+    message: "Sign in successfully",
+    user: {
+      email: user.email,
+      role: user.role,
+      id: user._id,
+      userName: user.userName,
+    },
+  });
+});
 
 // LOGOUT USER CONTROLLER
 export const handleLogout = catchAsyncErrors(async (req, res, next) => {});
