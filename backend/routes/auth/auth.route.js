@@ -5,6 +5,7 @@ import {
   handleLogout,
   handleRegister,
 } from "../../controllers/auth/auth.controller.js";
+import { checkAuthenticated } from "../../middlewares/authenticated.js";
 
 const router = express.Router();
 
@@ -18,6 +19,6 @@ router.post("/login", handleLogin);
 router.post("/logout", handleLogout);
 
 // CHECK-AUTH ROUTE
-router.get("/check-auth", handleCheckAuth);
+router.get("/check-auth", checkAuthenticated, handleCheckAuth);
 
 export default router;

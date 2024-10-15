@@ -81,4 +81,12 @@ export const handleLogin = catchAsyncErrors(async (req, res, next) => {
 export const handleLogout = catchAsyncErrors(async (req, res, next) => {});
 
 // CHECK-AUTH USER CONTROLLER
-export const handleCheckAuth = catchAsyncErrors(async (req, res, next) => {});
+export const handleCheckAuth = catchAsyncErrors(async (req, res, next) => {
+  const user = req.user;
+
+  res.status(201).json({
+    success: true,
+    message: "Authenticated user!",
+    user,
+  });
+});
