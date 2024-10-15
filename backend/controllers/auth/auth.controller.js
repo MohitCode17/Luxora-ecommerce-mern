@@ -84,7 +84,7 @@ export const handleLogout = catchAsyncErrors(async (req, res, next) => {});
 export const handleCheckAuth = catchAsyncErrors(async (req, res, next) => {
   const user = req.user;
 
-  res.status(201).json({
+  res.status(200).json({
     success: true,
     message: "Authenticated user!",
     user,

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Route, Routes } from "react-router-dom";
 import AuthLayout from "./components/auth/layout";
 import Login from "./pages/auth/Login";
@@ -19,10 +19,21 @@ import Search from "./pages/shopping/Search";
 import NotAuth from "./pages/not-auth";
 import NotFound from "./pages/not-found";
 import CheckAuth from "./components/common/check-auth";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { checkAuth } from "./store/authSlice";
 
 const App = () => {
-  const { isAuthenticated, user } = useSelector((state) => state.auth);
+  const { isAuthenticated, user, isLoading } = useSelector(
+    (state) => state.auth
+  );
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(checkAuth());
+  }, [dispatch, isAuthenticated]);
+
+  if (isLoading) return <h1>Loading...</h1>;
+
   return (
     <div className="">
       <Routes>
