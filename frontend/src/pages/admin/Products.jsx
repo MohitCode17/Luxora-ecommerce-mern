@@ -8,7 +8,10 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
-import React, { useState } from "react";
+import { useToast } from "@/hooks/use-toast";
+import { addNewProduct, fetchAllProducts } from "@/store/admin/productSlice";
+import React, { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 
 const initialState = {
   image: null,
@@ -30,10 +33,42 @@ const Products = () => {
   const [uploadedImageUrl, setUploadedImageUrl] = useState("");
   const [imageLoading, setImageLoading] = useState(false);
 
+  const { productList, isLoading } = useSelector(
+    (state) => state.adminProducts
+  );
+
+  console.log(productList);
+  const dispatch = useDispatch();
+  const { toast } = useToast();
+
   // HANDLE SUBMIT
-  const onSubmit = (e) => {
+  const onSubmit = async (e) => {
     e.preventDefault();
+
+    const data = await dispatch(
+      addNewProduct({
+        ...formData,
+        image: uploadedImageUrl,
+      })
+    );
+
+    if (data?.payload?.success) {
+      dispatch(fetchAllProducts());
+      setOpenCreateProductDialog(fasle);
+      setImageFile(null);
+      setFormData(initialState);
+
+      toast({
+        title: "Product added successfully.",
+      });
+    }
+    console.log(data);
   };
+
+  // FETCHING ALL PRODUCTS
+  useEffect(() => {
+    dispatch(fetchAllProducts());
+  }, [dispatch]);
 
   return (
     <>
@@ -56,15 +91,17 @@ const Products = () => {
             setImageFile={setImageFile}
             uploadedImageUrl={uploadedImageUrl}
             setUploadedImageUrl={setUploadedImageUrl}
+            imageLoading={imageLoading}
             setImageLoading={setImageLoading}
           />
           <div className="py-6">
             <CommonForm
               formControls={addProductFormElements}
               onSubmit={onSubmit}
-              buttonText={"Add"}
+              buttonText={isLoading ? "Please wait..." : "Add"}
               formData={formData}
               setFormData={setFormData}
+              isBtnDisabled={isLoading}
             />
           </div>
         </SheetContent>

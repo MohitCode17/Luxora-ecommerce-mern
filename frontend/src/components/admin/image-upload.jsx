@@ -4,12 +4,14 @@ import { Input } from "../ui/input";
 import { FileIcon, UploadCloudIcon, XIcon } from "lucide-react";
 import { Button } from "../ui/button";
 import axios from "axios";
+import { Skeleton } from "../ui/skeleton";
 
 const ProductImageUpload = ({
   imageFile,
   setImageFile,
   uploadedImageUrl,
   setUploadedImageUrl,
+  imageLoading,
   setImageLoading,
 }) => {
   const inputRef = useRef(null);
@@ -59,8 +61,9 @@ const ProductImageUpload = ({
   };
 
   useEffect(() => {
-    if (imageFile !== null) handleUploadProductImage();
-  }, [imageFile]);
+    if (imageFile && !uploadedImageUrl && !imageLoading)
+      handleUploadProductImage();
+  }, [imageFile, uploadedImageUrl, imageLoading]);
 
   return (
     <div className="w-full max-w-md mx-auto mt-2">
@@ -88,6 +91,8 @@ const ProductImageUpload = ({
               Drag & Drop or Click to upload image
             </span>
           </Label>
+        ) : imageLoading ? (
+          <Skeleton className={"h-10 bg-gray-100"} />
         ) : (
           <div className="flex items-center justify-between">
             <div className="flex items-center">
