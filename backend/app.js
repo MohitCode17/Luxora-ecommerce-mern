@@ -3,6 +3,7 @@ import cookieParser from "cookie-parser";
 import cors from "cors";
 import { errorMiddleware } from "./middlewares/error.js";
 import { config } from "./config/env.config.js";
+import fileUpload from "express-fileupload";
 
 import authRoutes from "./routes/auth/auth.route.js";
 
@@ -28,6 +29,12 @@ app.use(
 app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(
+  fileUpload({
+    useTempFiles: true,
+    tempFileDir: "/tmp/",
+  })
+);
 
 // TESTING ROUTE
 app.get("/", (req, res) => {
