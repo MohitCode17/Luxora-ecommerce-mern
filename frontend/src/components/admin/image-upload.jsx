@@ -1,14 +1,16 @@
-import React, { useRef } from "react";
+import React, { useEffect, useRef } from "react";
 import { Label } from "../ui/label";
 import { Input } from "../ui/input";
 import { FileIcon, UploadCloudIcon, XIcon } from "lucide-react";
 import { Button } from "../ui/button";
+import axios from "axios";
 
 const ProductImageUpload = ({
   imageFile,
   setImageFile,
   uploadedImageUrl,
   setUploadedImageUrl,
+  setImageLoading,
 }) => {
   const inputRef = useRef(null);
 
@@ -34,6 +36,31 @@ const ProductImageUpload = ({
       inputRef.current.value = "";
     }
   };
+
+  // HANDLE UPLOAD IMAGE
+  const handleUploadProductImage = async () => {
+    setImageLoading(true);
+    const formData = new FormData();
+    formData.append("productImage", imageFile);
+
+    try {
+      const res = await axios.post(
+        "http://localhost:8000/api/products/upload-image",
+        formData
+      );
+
+      if (res?.data?.success) {
+        setUploadedImageUrl(res?.data?.uploadResult?.url);
+        setImageLoading(false);
+      }
+    } catch (error) {
+      console.log(`Error uploading product image to cloudinary`, error);
+    }
+  };
+
+  useEffect(() => {
+    if (imageFile !== null) handleUploadProductImage();
+  }, [imageFile]);
 
   return (
     <div className="w-full max-w-md mx-auto mt-2">
