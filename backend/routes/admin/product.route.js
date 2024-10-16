@@ -1,7 +1,6 @@
 import express from "express";
 import {
   fetchAllProducts,
-  fetchProduct,
   handleAddProduct,
   handleDeleteProduct,
   handleEditProduct,
@@ -17,15 +16,12 @@ router.post("/upload-image", handleImageUpload);
 router.post("/add", handleAddProduct);
 
 // FETCHING ALL PRODUCT ROUTE
-router.post("/get", fetchAllProducts);
-
-// FETCHING SINGLE PRODUCT ROUTE
-router.post("/get/:id", fetchProduct);
+router.get("/get", fetchAllProducts);
 
 // UPDATE PRODUCT ROUTE
-router.post("/edit/:id", handleEditProduct);
+router.put("/edit/:id", handleEditProduct);
 
 // DELETE PRODUCT ROUTE
-router.post("/delete/:id", handleDeleteProduct);
+router.delete("/delete/:id", handleDeleteProduct);
 
 export default router;
