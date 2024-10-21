@@ -1,4 +1,5 @@
 import ProductImageUpload from "@/components/admin/image-upload";
+import AdminProduct from "@/components/admin/product";
 import CommonForm from "@/components/common/form";
 import { addProductFormElements } from "@/components/config";
 import { Button } from "@/components/ui/button";
@@ -9,7 +10,11 @@ import {
   SheetTitle,
 } from "@/components/ui/sheet";
 import { useToast } from "@/hooks/use-toast";
-import { addNewProduct, fetchAllProducts } from "@/store/admin/productSlice";
+import {
+  addNewProduct,
+  editProduct,
+  fetchAllProducts,
+} from "@/store/admin/productSlice";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
@@ -32,12 +37,12 @@ const Products = () => {
   const [imageFile, setImageFile] = useState(null);
   const [uploadedImageUrl, setUploadedImageUrl] = useState("");
   const [imageLoading, setImageLoading] = useState(false);
+  const [currentEditedId, setCurrentEditedId] = useState(null);
 
   const { productList, isLoading } = useSelector(
     (state) => state.adminProducts
   );
 
-  console.log(productList);
   const dispatch = useDispatch();
   const { toast } = useToast();
 
@@ -45,24 +50,43 @@ const Products = () => {
   const onSubmit = async (e) => {
     e.preventDefault();
 
-    const data = await dispatch(
-      addNewProduct({
-        ...formData,
-        image: uploadedImageUrl,
-      })
-    );
+    if (currentEditedId !== null) {
+      const data = await dispatch(
+        editProduct({ id: currentEditedId, formData })
+      );
 
-    if (data?.payload?.success) {
-      dispatch(fetchAllProducts());
-      setOpenCreateProductDialog(fasle);
-      setImageFile(null);
-      setFormData(initialState);
+      if (data?.payload?.success) {
+        dispatch(fetchAllProducts());
+        setOpenCreateProductDialog(false);
+        setFormData(initialState);
+        setCurrentEditedId(null);
+      }
+    } else {
+      const data = await dispatch(
+        addNewProduct({
+          ...formData,
+          image: uploadedImageUrl,
+        })
+      );
 
-      toast({
-        title: "Product added successfully.",
-      });
+      if (data?.payload?.success) {
+        dispatch(fetchAllProducts());
+        setOpenCreateProductDialog(false);
+        setImageFile(null);
+        setFormData(initialState);
+
+        toast({
+          title: "Product added successfully.",
+        });
+      }
     }
-    console.log(data);
+  };
+
+  // DISABLED BUTTON FUNCTIONALITY
+  const isFormValid = () => {
+    return Object.keys(formData)
+      .map((key) => formData[key] !== "")
+      .every((item) => item);
   };
 
   // FETCHING ALL PRODUCTS
@@ -77,14 +101,33 @@ const Products = () => {
           Add New Product
         </Button>
       </div>
-      <div className="grid gap-4 md:grid-cols-3 lg:grid-cols-4"></div>
+      {/* PRODUCTS LIST */}
+      <div className="grid gap-4 md:grid-cols-3 lg:grid-cols-4">
+        {productList && productList.length > 0
+          ? productList.map((productItem) => (
+              <AdminProduct
+                key={productItem._id}
+                setCurrentEditedId={setCurrentEditedId}
+                setFormData={setFormData}
+                setOpenCreateProductDialog={setOpenCreateProductDialog}
+                product={productItem}
+              />
+            ))
+          : null}
+      </div>
       <Sheet
         open={openCreateProductsDialog}
-        onOpenChange={() => setOpenCreateProductDialog(false)}
+        onOpenChange={() => {
+          setOpenCreateProductDialog(false);
+          setCurrentEditedId(null);
+          setFormData(initialState);
+        }}
       >
         <SheetContent side="right" className="overflow-auto">
           <SheetHeader>
-            <SheetTitle>Add New Product</SheetTitle>
+            <SheetTitle>
+              {currentEditedId !== null ? "Edit Product" : "Add New Product"}
+            </SheetTitle>
           </SheetHeader>
           <ProductImageUpload
             imageFile={imageFile}
@@ -93,15 +136,22 @@ const Products = () => {
             setUploadedImageUrl={setUploadedImageUrl}
             imageLoading={imageLoading}
             setImageLoading={setImageLoading}
+            isEditMode={currentEditedId !== null}
           />
           <div className="py-6">
             <CommonForm
               formControls={addProductFormElements}
               onSubmit={onSubmit}
-              buttonText={isLoading ? "Please wait..." : "Add"}
+              buttonText={
+                isLoading
+                  ? "Please wait..."
+                  : currentEditedId !== null
+                  ? "Edit"
+                  : "Add"
+              }
               formData={formData}
               setFormData={setFormData}
-              isBtnDisabled={isLoading}
+              isBtnDisabled={isLoading || !isFormValid()}
             />
           </div>
         </SheetContent>
