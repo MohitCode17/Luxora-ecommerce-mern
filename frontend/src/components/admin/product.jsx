@@ -7,6 +7,7 @@ const AdminProduct = ({
   setFormData,
   setOpenCreateProductDialog,
   setCurrentEditedId,
+  handleDeleteProduct,
 }) => {
   const discount =
     product?.salePrice > 0
@@ -67,7 +68,10 @@ const AdminProduct = ({
           >
             Edit
           </Button>
-          <Button className="flex-1 bg-red-500 hover:bg-red-600 text-white font-semibold px-4 py-2 rounded-lg transition-colors duration-300">
+          <Button
+            onClick={() => handleDeleteProduct(product?._id)}
+            className="flex-1 bg-red-500 hover:bg-red-600 text-white font-semibold px-4 py-2 rounded-lg transition-colors duration-300"
+          >
             Delete
           </Button>
         </CardFooter>

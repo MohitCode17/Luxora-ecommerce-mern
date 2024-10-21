@@ -12,6 +12,7 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import {
   addNewProduct,
+  deleteProduct,
   editProduct,
   fetchAllProducts,
 } from "@/store/admin/productSlice";
@@ -81,6 +82,18 @@ const Products = () => {
       }
     }
   };
+  // HANDLE DELETE PRODUCT
+  const handleDeleteProduct = async (productId) => {
+    const data = await dispatch(deleteProduct(productId));
+    console.log(data);
+
+    if (data?.payload?.success) {
+      dispatch(fetchAllProducts());
+      toast({
+        title: "Product deleted successfully.",
+      });
+    }
+  };
 
   // DISABLED BUTTON FUNCTIONALITY
   const isFormValid = () => {
@@ -111,6 +124,7 @@ const Products = () => {
                 setFormData={setFormData}
                 setOpenCreateProductDialog={setOpenCreateProductDialog}
                 product={productItem}
+                handleDeleteProduct={handleDeleteProduct}
               />
             ))
           : null}
