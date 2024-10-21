@@ -90,7 +90,7 @@ const Products = () => {
     if (data?.payload?.success) {
       dispatch(fetchAllProducts());
       toast({
-        title: "Product deleted successfully.",
+        title: data?.payload?.message,
       });
     }
   };
