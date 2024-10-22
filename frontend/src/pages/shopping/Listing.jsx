@@ -13,6 +13,23 @@ import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchAllFilteredProducts } from "@/store/shop/productSlice";
 import ShoppingProductCard from "@/components/shopping/product-card";
+import { useSearchParams } from "react-router-dom";
+
+// CREATE SEARCH PARAMS HELPER FUNCTION
+const createSearchParamsHelper = (filterParams) => {
+  const queryParams = [];
+
+  for (const [key, value] of Object.entries(filterParams)) {
+    if (Array.isArray(value) && value.length > 0) {
+      const paramValue = value.join(",");
+
+      queryParams.push(`${key}=${encodeURIComponent(paramValue)}`);
+    }
+  }
+
+  console.log(queryParams, "queryParams");
+  return queryParams.join("&");
+};
 
 const Listing = () => {
   const { productList } = useSelector((state) => state.shopProducts);
@@ -20,6 +37,7 @@ const Listing = () => {
 
   const [filters, setFilters] = useState({});
   const [sort, setSort] = useState(null);
+  const [searchParams, setSearchParams] = useSearchParams();
 
   // HANDLE SORT
   const handleSort = (value) => {
@@ -51,6 +69,15 @@ const Listing = () => {
     setFilters(copyFilters);
     sessionStorage.setItem("filters", JSON.stringify(copyFilters));
   };
+
+  // SET SEARCH PARAMS AS PER FILTERS
+  useEffect(() => {
+    if (filters && Object.keys(filters).length > 0) {
+      const createQueryString = createSearchParamsHelper(filters);
+
+      setSearchParams(new URLSearchParams(createQueryString));
+    }
+  }, [filters]);
 
   useEffect(() => {
     setSort("price-lowtohigh");
