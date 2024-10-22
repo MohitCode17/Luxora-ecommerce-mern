@@ -7,6 +7,7 @@ import fileUpload from "express-fileupload";
 
 import authRoutes from "./routes/auth/auth.route.js";
 import productRoutes from "./routes/admin/product.route.js";
+import shopProductsRoutes from "./routes/shop/product.route.js";
 
 const app = express();
 
@@ -45,6 +46,9 @@ app.get("/", (req, res) => {
 // ROUTES
 app.use("/api/auth", authRoutes);
 app.use("/api/products", productRoutes);
+
+// SHOP ROUTES
+app.use("/api/shop/products", shopProductsRoutes);
 
 // ERROR HANDLING MIDDLEWARE
 app.use(errorMiddleware);
