@@ -27,7 +27,6 @@ const createSearchParamsHelper = (filterParams) => {
     }
   }
 
-  console.log(queryParams, "queryParams");
   return queryParams.join("&");
 };
 
@@ -85,8 +84,11 @@ const Listing = () => {
   }, []);
 
   useEffect(() => {
-    dispatch(fetchAllFilteredProducts());
-  }, [dispatch]);
+    if (filters !== null && sort !== null)
+      dispatch(
+        fetchAllFilteredProducts({ filterParams: filters, sortParams: sort })
+      );
+  }, [dispatch, sort, filters]);
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-[200px_1fr] gap-6 p-4 md:p-6">
