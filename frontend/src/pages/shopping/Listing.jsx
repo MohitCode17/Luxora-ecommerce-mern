@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { ArrowUpDownIcon } from "lucide-react";
 import { sortOptions } from "@/config";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchAllFilteredProducts } from "@/store/shop/productSlice";
 import ShoppingProductCard from "@/components/shopping/product-card";
@@ -18,6 +18,45 @@ const Listing = () => {
   const { productList } = useSelector((state) => state.shopProducts);
   const dispatch = useDispatch();
 
+  const [filters, setFilters] = useState({});
+  const [sort, setSort] = useState(null);
+
+  // HANDLE SORT
+  const handleSort = (value) => {
+    setSort(value);
+  };
+
+  // HANDLE FILTER
+  const handleFilter = (getSectionId, getCurrentOption) => {
+    let copyFilters = { ...filters };
+    const indexOfCurrentSection =
+      Object.keys(copyFilters).indexOf(getSectionId);
+
+    if (indexOfCurrentSection === -1) {
+      copyFilters = {
+        ...copyFilters,
+        [getSectionId]: [getCurrentOption],
+      };
+    } else {
+      const indexOfCurrentOption =
+        copyFilters[getSectionId].indexOf(getCurrentOption);
+
+      if (indexOfCurrentOption === -1) {
+        copyFilters[getSectionId].push(getCurrentOption);
+      } else {
+        copyFilters[getSectionId].splice(indexOfCurrentOption, 1);
+      }
+    }
+
+    setFilters(copyFilters);
+    sessionStorage.setItem("filters", JSON.stringify(copyFilters));
+  };
+
+  useEffect(() => {
+    setSort("price-lowtohigh");
+    setFilters(JSON.parse(sessionStorage.getItem("filters")) || {});
+  }, []);
+
   useEffect(() => {
     dispatch(fetchAllFilteredProducts());
   }, [dispatch]);
@@ -25,7 +64,7 @@ const Listing = () => {
   return (
     <div className="grid grid-cols-1 md:grid-cols-[200px_1fr] gap-6 p-4 md:p-6">
       {/* PRODUCT FILTER */}
-      <ProductFilter />
+      <ProductFilter filters={filters} handleFilter={handleFilter} />
       {/* PRODUCT LISTING HEADER */}
       <div className="bg-background w-full rounded-lg shadow-sm">
         <div className="flex items-center justify-between border-b p-4">
@@ -45,7 +84,7 @@ const Listing = () => {
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-[200px]">
-                <DropdownMenuRadioGroup>
+                <DropdownMenuRadioGroup value={sort} onValueChange={handleSort}>
                   {sortOptions.map((sortItem) => (
                     <DropdownMenuRadioItem
                       value={sortItem.id}
@@ -61,7 +100,7 @@ const Listing = () => {
         </div>
 
         {/* PRODUCT CARD */}
-        <div className="grid gap-4 md:grid-cols-3 lg:grid-cols-4 my-6">
+        <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 my-6">
           {productList && productList.length > 0
             ? productList.map((productItem) => (
                 <ShoppingProductCard

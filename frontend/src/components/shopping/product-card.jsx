@@ -8,7 +8,7 @@ const ShoppingProductCard = ({ product }) => {
       : 0;
 
   return (
-    <Card className="w-full max-w-[250px] mx-auto hover:shadow-xl transition-shadow duration-300 rounded-lg overflow-hidden">
+    <Card className="w-full max-w-[290px] mx-auto hover:shadow-xl transition-shadow duration-300 rounded-lg overflow-hidden">
       <div className="relative group">
         {/* Image with zoom effect on hover */}
         <div className="relative overflow-hidden h-[260px]">
