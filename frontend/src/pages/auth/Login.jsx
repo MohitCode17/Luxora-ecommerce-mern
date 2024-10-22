@@ -1,5 +1,5 @@
 import CommonForm from "@/components/common/form";
-import { loginFormControls } from "@/components/config";
+import { loginFormControls } from "@/config";
 import { useToast } from "@/hooks/use-toast";
 import { loginUser } from "@/store/authSlice";
 import { useState } from "react";

@@ -4,7 +4,7 @@ import { GiShoppingBag } from "react-icons/gi";
 import { Sheet, SheetContent, SheetTrigger } from "../ui/sheet";
 import { Button } from "../ui/button";
 import { LogOut, Menu, ShoppingCart, UserCog } from "lucide-react";
-import { shoppingViewHeaderMenuItems } from "../config";
+import { shoppingViewHeaderMenuItems } from "../../config";
 import { Label } from "../ui/label";
 import {
   DropdownMenu,
